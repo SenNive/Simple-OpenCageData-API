@@ -1,46 +1,46 @@
 const db = require('./db')
 
+const { sendErrorResponse, sendSuccessResponse } = require('./helper/sendRequest')
+
 const defaultAdminPassword = '***REMOVED***'
 
 const authenticate = (req, res, next) => {
-  const adminPassword = req.query.adminPassword
+  const adminPassword = req.query.adminPassword;
 
   if (!adminPassword) {
-    return res.status(400).json({ message: 'Admin Password Diperlukan' })
+    return sendErrorResponse(req, res, 400);
   }
 
   try {
     if (defaultAdminPassword == adminPassword) {
-      next()
+      next();
     } else {
-      res.status(401).json({ message: 'Password Salah' })
+      return sendErrorResponse(req, res, 401);
     }
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ message: 'Terjadi kesalahan dalam autentikasi.' })
+    console.log(error);
+    return sendErrorResponse(req, res, 500);
   }
-}
+};
 
 // Mendapatkan daftar pengguna
 const getUsers = (req, res) => {
   db.query('SELECT * FROM mapserviceusers', (error, results, fields) => {
     if (error) {
-      console.log(error)
-      res
-        .status(500)
-        .json({ message: 'Terjadi kesalahan dalam mengambil data pengguna.' })
+      console.log(error);
+      return sendErrorResponse(req, res, 500);
     } else {
-      res.status(200).json(results)
+      return sendSuccessResponse(req, res, 200, results);
     }
-  })
-}
+  });
+};
 
 // Menambahkan pengguna
 const addUser = (req, res) => {
   const { username, email } = req.body
 
   if (!username || !email) {
-    res.status(400).json({ message: 'Harap isi semua kolom yang diperlukan.' })
+    return sendErrorResponse(req, res, 400);
   } else {
     // Periksa apakah username sudah ada dalam database
     db.query(
@@ -48,12 +48,10 @@ const addUser = (req, res) => {
       [username],
       (error, results, fields) => {
         if (error) {
-          console.log(error)
-          res.status(500).json({
-            message: 'Terjadi kesalahan dalam menambahkan pengguna baru.'
-          })
+          console.log(error);
+          return sendErrorResponse(req, res, 500);
         } else if (results.length > 0) {
-          res.status(409).json({ message: 'Username sudah digunakan.' })
+          return sendErrorResponse(req, res, 409, 'Username sudah digunakan.');
         } else {
           // Tambahkan pengguna jika username unik
           db.query(
@@ -61,14 +59,10 @@ const addUser = (req, res) => {
             [username, email],
             (error, results, fields) => {
               if (error) {
-                console.log(error)
-                res.status(500).json({
-                  message: 'Terjadi kesalahan dalam menambahkan pengguna baru.'
-                })
+                console.log(error);
+                return sendErrorResponse(req, res, 500);
               } else {
-                res
-                  .status(201)
-                  .json({ message: 'Pengguna berhasil ditambahkan.' })
+                return sendSuccessResponse(req, res, 201, { message: 'Pengguna berhasil ditambahkan.' });
               }
             }
           )
@@ -76,7 +70,7 @@ const addUser = (req, res) => {
       }
     )
   }
-}
+};
 
 // Mengedit pengguna
 const editUser = (req, res) => {
@@ -84,7 +78,7 @@ const editUser = (req, res) => {
   const { username, email } = req.body
 
   if (!username || !email) {
-    res.status(400).json({ message: 'Harap isi semua kolom yang diperlukan.' })
+    return sendErrorResponse(req, res, 400);
   } else {
     // Periksa apakah pengguna dengan ID yang diberikan ada dalam database
     db.query(
@@ -92,11 +86,9 @@ const editUser = (req, res) => {
       [userId],
       (selectError, selectResults, selectFields) => {
         if (selectError) {
-          res
-            .status(500)
-            .json({ message: 'Terjadi kesalahan dalam mengedit pengguna.' })
+          return sendErrorResponse(req, res, 500);
         } else if (selectResults.length === 0) {
-          res.status(404).json({ message: 'Pengguna tidak ditemukan.' })
+          return sendErrorResponse(req, res, 404, 'Pengguna tidak ditemukan.');
         } else {
           // Pengguna ditemukan, lakukan pembaruan
           db.query(
@@ -104,13 +96,9 @@ const editUser = (req, res) => {
             [username, email, userId],
             (updateError, updateResults, updateFields) => {
               if (updateError) {
-                res.status(500).json({
-                  message: 'Terjadi kesalahan dalam mengedit pengguna.'
-                })
+                return sendErrorResponse(req, res, 500);
               } else {
-                res
-                  .status(200)
-                  .json({ message: 'Pengguna berhasil diperbarui.' })
+                return sendSuccessResponse(req, res, 200, { message: 'Pengguna berhasil diperbarui.' });
               }
             }
           )
@@ -130,14 +118,12 @@ const deleteUser = (req, res) => {
     (error, results, fields) => {
       if (error) {
         console.log(error)
-        res
-          .status(500)
-          .json({ message: 'Terjadi kesalahan dalam menghapus pengguna.' })
+        return sendErrorResponse(req, res, 500);
       } else {
         if (results.affectedRows === 0) {
-          res.status(404).json({ message: 'Pengguna tidak ditemukan.' })
+          return sendErrorResponse(req, res, 404, 'Pengguna tidak ditemukan.');
         } else {
-          res.status(200).json({ message: 'Pengguna berhasil dihapus.' })
+          return sendSuccessResponse(req, res, 200, { message: 'Pengguna berhasil dihapus.' });
         }
       }
     }
