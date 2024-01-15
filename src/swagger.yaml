@@ -37,7 +37,7 @@ paths:
           description: Username yang sah untuk otentikasi
       responses:
         "200":
-          description: Sukses
+          description: Success
           content:
             application/json:
               schema:
@@ -45,12 +45,16 @@ paths:
             application/xml:
               schema:
                 $ref: "#/components/schemas/Map"
+        "400":
+          description: Bad Request. Harap isi semua kolom yang diperlukan.
         "401":
-          description: Autentikasi gagal. Username tidak terdaftar.
+          description: Unauthorized.
         "404":
-          description: Alamat tidak ditemukan
+          description: Not Found. Alamat tidak ditemukan.
+        "406":
+          description: Not Acceptable.
         "500":
-          description: Terjadi kesalahan dalam pemrosesan geocoding
+          description: Internal Server Error.
   "/map/reverse":
     get:
       tags:
@@ -84,7 +88,7 @@ paths:
           description: Valid username for authentication
       responses:
         "200":
-          description: successful operation
+          description: Success.
           content:
             application/json:
               schema:
@@ -92,12 +96,16 @@ paths:
             application/xml:
               schema:
                 $ref: "#/components/schemas/Map"
+        "400":
+          description: Bad Request. Harap isi semua kolom yang diperlukan.
         "401":
-          description: Autentikasi gagal. Username tidak terdaftar.
+          description: Unauthorized.
         "404":
-          description: Alamat tidak ditemukan
+          description: Not Found. Alamat tidak ditemukan.
+        "406":
+          description: Not Acceptable.
         "500":
-          description: Terjadi kesalahan dalam pemrosesan geocoding
+          description: Internal Server Error.
   "/map/forward":
     get:
       tags:
@@ -120,7 +128,7 @@ paths:
           description: Valid username for authentication
       responses:
         "200":
-          description: Sukses
+          description: Success.
           content:
             application/json:
               schema:
@@ -128,12 +136,16 @@ paths:
             application/xml:
               schema:
                 $ref: "#/components/schemas/Geometry"
+        "400":
+          description: Bad Request. Harap isi semua kolom yang diperlukan.
         "401":
-          description: Autentikasi gagal. Username tidak terdaftar.
+          description: Unauthorized.
         "404":
-          description: Alamat tidak ditemukan
+          description: Not Found. Alamat tidak ditemukan.
+        "406":
+          description: Not Acceptable.
         "500":
-          description: Terjadi kesalahan dalam pemrosesan geocoding
+          description: Internal Server Error.
   "/map/calculateDistance":
     get:
       tags:
@@ -162,47 +174,17 @@ paths:
           description: Username yang sah untuk otentikasi
       responses:
         "200":
-          description: Sukses
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  distanceInKm:
-                    type: number
-                    description:
-                      Jarak antara lokasi asal dan lokasi tujuan dalam
-                      kilometer
+          description: Success.
         "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Informasi tentang kesalahan permintaan
+          description: Bad Request. Harap isi semua kolom yang diperlukan.
         "401":
-          description: Autentikasi gagal. Username tidak terdaftar.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Autentikasi gagal. Username tidak terdaftar
+          description: Unauthorized.
+        "404":
+          description: Not Found. Alamat tidak ditemukan.
+        "406":
+          description: Not Acceptable.
         "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Informasi tentang kesalahan server
+          description: Internal Server Error.
   "/admin/users":
     get:
       tags:
@@ -219,29 +201,20 @@ paths:
           description: Kata sandi admin diperlukan untuk otentikasi.
       responses:
         "200":
-          description: Operasi berhasil
+          description: Success.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: ID Pengguna
-                    username:
-                      type: string
-                      description: Nama Pengguna
-                    email:
-                      type: string
-                      description: Email
+                $ref: "#/components/schemas/User"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/User"
         "400":
-          description: Permintaan tidak valid. Kata sandi admin diperlukan.
+          description: Bad Request. Harap isi semua kolom yang diperlukan.
         "401":
-          description: Tidak diotorisasi. Kata sandi admin salah.
+          description: Unauthorized.
         "500":
-          description: Kesalahan server internal
+          description: Internal Server Error.
     post:
       tags:
         - admin
@@ -271,15 +244,15 @@ paths:
           description: Kata sandi admin diperlukan untuk otentikasi.
       responses:
         "201":
-          description: Pengguna berhasil ditambahkan.
+          description: Created. Pengguna berhasil ditambahkan.
         "400":
-          description: Permintaan tidak valid. Kata sandi admin diperlukan.
+          description: Bad Request. Harap isi semua kolom yang diperlukan.
         "401":
-          description: Tidak diotorisasi. Kata sandi admin salah.
+          description: Unauthorized.
         "409":
-          description: Konflik. Nama pengguna sudah digunakan.
+          description: Conflict. Pengguna sudah ada dalam database.
         "500":
-          description: Kesalahan server internal
+          description: Internal Server Error.
     put:
       tags:
         - admin
@@ -314,15 +287,15 @@ paths:
           description: Kata sandi admin diperlukan untuk otentikasi.
       responses:
         "200":
-          description: Pengguna berhasil diperbarui.
+          description: Success.
         "400":
-          description: Permintaan tidak valid. Kata sandi admin diperlukan.
+          description: Bad Request.
         "401":
-          description: Tidak diotorisasi. Kata sandi admin salah.
+          description: Unauthorized.
         "404":
-          description: Pengguna tidak ditemukan.
+          description: Not Found.
         "500":
-          description: Kesalahan server internal
+          description: Internal Server Error.
     delete:
       tags:
         - admin
@@ -344,15 +317,15 @@ paths:
           description: Kata sandi admin diperlukan untuk otentikasi.
       responses:
         "200":
-          description: Pengguna berhasil dihapus.
+          description: Success.
         "400":
-          description: Permintaan tidak valid. Kata sandi admin diperlukan.
+          description: Bad Request.
         "401":
-          description: Tidak diotorisasi. Kata sandi admin salah.
+          description: Unauthorized.
         "404":
-          description: Pengguna tidak ditemukan.
+          description: Not Found.
         "500":
-          description: Kesalahan server internal
+          description: Internal Server Error.
 components:
   schemas:
     User:
@@ -367,10 +340,6 @@ components:
         email:
           type: string
           description: Email
-      required:
-        - id
-        - username
-        - email
     Map:
       type: object
       properties:
