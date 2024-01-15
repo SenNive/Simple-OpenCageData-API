@@ -1,9 +1,11 @@
+require('dotenv').config();
+
 const db = require('./db')
 const axios = require('axios')
 const geolib = require('geolib')
 const { sendErrorResponse, sendSuccessResponse } = require('./helper/sendRequest')
 
-const apiKey = '***REMOVED***'
+const apiKey = process.env.API_KEY;
 
 const authenticate = (req, res, next) => {
   const username = req.query.username;

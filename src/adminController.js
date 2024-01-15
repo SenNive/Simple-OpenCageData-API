@@ -1,8 +1,10 @@
+require('dotenv').config();
+
 const db = require('./db')
 
 const { sendErrorResponse, sendSuccessResponse } = require('./helper/sendRequest')
 
-const defaultAdminPassword = '***REMOVED***'
+const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD;
 
 const authenticate = (req, res, next) => {
   const adminPassword = req.query.adminPassword;
