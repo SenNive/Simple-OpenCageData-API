@@ -97,6 +97,7 @@ const worldwide = async (req, res) => {
 };
 
 
+
 // Fungsi untuk melakukan reverse geocoding (latitude/longitude to text)
 const reverse = async (req, res) => {
   const { lat, lng } = req.query
@@ -181,41 +182,17 @@ const forward = async (req, res) => {
   }
 }
 
-const forwardShort = async (req, res) => {
-  const query = req.query.query
-
-  if (!query) {
-    return res
-      .status(400)
-      .json({ message: 'Harap masukkan query untuk forward geocoding.' })
-  }
-
+const forwardShort = async query => {
   const forwardGeocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
     query
   )}&key=${apiKey}`
   try {
     const response = await axios.get(forwardGeocodeUrl)
-
-    res.format({
-      'application/json': function () {
-        res.json(response.data);
-      },
-
-      'application/xml': function () {
-        var xml = convertJsonToXml(response.data);
-        res.type('application/xml');
-        res.send(xml);
-      },
-
-      'default': function () {
-        res.status(406).send('Not Acceptable');
-      }
-    });
+    return response.data
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ message: error.message })
+    throw new Error('Terjadi kesalahan dalam forward geocoding.')
   }
-};
+}
 
 // Fungsi untuk menghitung jarak antara dua lokasi
 const calculateDistance = async (req, res) => {
