@@ -41,20 +41,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MapWorldwide"
+                $ref: "#/components/schemas/Map"
             application/xml:
               schema:
-                $ref: "#/components/schemas/MapWorldwide"
+                $ref: "#/components/schemas/Map"
         "401":
           description: Autentikasi gagal. Username tidak terdaftar.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Autentikasi gagal. Username tidak terdaftar
+        "404":
+          description: Alamat tidak ditemukan
         "500":
           description: Terjadi kesalahan dalam pemrosesan geocoding
   "/map/reverse":
@@ -64,164 +58,6 @@ paths:
       summary:
         Mengonversi pasangan latitude/longitude menjadi alamat atau teks deskripsi
         lokasi.
-      parameters:
-        - name: lat
-          in: query
-          required: true
-          schema:
-            type: number
-          description: Latitude
-        - name: lng
-          in: query
-          required: true
-          schema:
-            type: number
-          description: Longitude
-        - name: username
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Username yang sah untuk otentikasi
-      responses:
-        "200":
-          description: Sukses
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  documentation:
-                    type: string
-                    description: Dokumentasi OpenCage API
-                  licenses:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          description: Nama lisensi
-                        url:
-                          type: string
-                          description: URL lisensi
-                    description: Informasi lisensi
-                  rate:
-                    type: object
-                    properties:
-                      limit:
-                        type: integer
-                        description: Batas permintaan per periode
-                      remaining:
-                        type: integer
-                        description: Sisa permintaan dalam periode saat ini
-                      reset:
-                        type: integer
-                        description: Waktu reset periode permintaan
-                    description: Informasi batasan permintaan
-                  results:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        annotations:
-                          type: object
-                          description: Anotasi geografis
-                        bounds:
-                          type: object
-                          properties:
-                            northeast:
-                              type: object
-                              properties:
-                                lat:
-                                  type: number
-                                  description: Latitude titik tenggara
-                                lng:
-                                  type: number
-                                  description: Longitude titik tenggara
-                            southwest:
-                              type: object
-                              properties:
-                                lat:
-                                  type: number
-                                  description: Latitude titik barat laut
-                                lng:
-                                  type: number
-                                  description: Longitude titik barat laut
-                          description: Batas hasil geocoding
-                        components:
-                          type: object
-                          description: Komponen alamat
-                        confidence:
-                          type: integer
-                          description: Tingkat keyakinan geocoding
-                        formatted:
-                          type: string
-                          description: Alamat lengkap hasil geocoding
-                        geometry:
-                          type: object
-                          properties:
-                            lat:
-                              type: number
-                              description: Latitude
-                            lng:
-                              type: number
-                              description: Longitude
-                          description: Informasi geometri hasil geocoding
-                    description: Hasil geocoding
-                  status:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        description: Kode status HTTP
-                      message:
-                        type: string
-                        description: Pesan status
-                    description: Informasi status permintaan
-                  stay_informed:
-                    type: object
-                    properties:
-                      blog:
-                        type: string
-                        description: URL blog OpenCage
-                      mastodon:
-                        type: string
-                        description: URL Mastodon OpenCage
-                    description: Tetap informasi dengan OpenCage
-                  thanks:
-                    type: string
-                    description: Terima kasih untuk menggunakan OpenCage API
-                  timestamp:
-                    type: object
-                    properties:
-                      created_http:
-                        type: string
-                        description: Waktu pembuatan respons dalam format HTTP
-                      created_unix:
-                        type: integer
-                        description: Waktu pembuatan respons dalam format Unix
-                    description: Informasi timestamp respons
-                  total_results:
-                    type: integer
-                    description: Total hasil geocoding
-        "401":
-          description: Autentikasi gagal. Username tidak terdaftar.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Autentikasi gagal. Username tidak terdaftar
-        "500":
-          description: Terjadi kesalahan dalam pemrosesan geocoding
-  "/map/forward":
-    get:
-      tags:
-        - map
-      summary: Mengonversi alamat atau teks menjadi koordinat latitude/longitude.
       parameters:
         - name: lat
           in: query
@@ -248,38 +84,54 @@ paths:
           description: Valid username for authentication
       responses:
         "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Map"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Map"
+        "401":
+          description: Autentikasi gagal. Username tidak terdaftar.
+        "404":
+          description: Alamat tidak ditemukan
+        "500":
+          description: Terjadi kesalahan dalam pemrosesan geocoding
+  "/map/forward":
+    get:
+      tags:
+        - map
+      summary: Mengonversi alamat atau teks menjadi koordinat latitude/longitude.
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "Danau Sunter"
+          description: Query for forward geocoding
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "Budi"
+          description: Valid username for authentication
+      responses:
+        "200":
           description: Sukses
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  latitude:
-                    type: number
-                    description: Latitude
-                  longitude:
-                    type: number
-                    description: Longitude
+                $ref: "#/components/schemas/Geometry"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Geometry"
         "401":
           description: Autentikasi gagal. Username tidak terdaftar.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Autentikasi gagal. Username tidak terdaftar
         "404":
           description: Alamat tidak ditemukan
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Alamat tidak ditemukan
         "500":
           description: Terjadi kesalahan dalam pemrosesan geocoding
   "/map/calculateDistance":
@@ -519,7 +371,7 @@ components:
         - id
         - username
         - email
-    MapWorldwide:
+    Map:
       type: object
       properties:
         documentation:
