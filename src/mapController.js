@@ -67,12 +67,29 @@ const worldwide = async (req, res) => {
   )}&key=${apiKey}`
   try {
     const response = await axios.get(worldwideGeocodeUrl)
-    res.status(200).json(response.data)
+
+    res.format({
+      'application/json': function () {
+        res.json(response.data);
+      },
+
+      'application/xml': function () {
+        // Convert JSON data to XML
+        var xml = convertJsonToXml(response.data);
+        res.type('application/xml');
+        res.send(xml);
+      },
+
+      'default': function () {
+        // log the request and respond with 406
+        res.status(406).send('Not Acceptable');
+      }
+    });
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: error.message })
   }
-}
+};
 
 // Fungsi untuk melakukan reverse geocoding (latitude/longitude to text)
 const reverse = async (req, res) => {

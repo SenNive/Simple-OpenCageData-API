@@ -18,7 +18,8 @@
     "js-yaml": "^4.1.0",
     "localtunnel": "^2.0.2",
     "mysql2": "^3.6.2",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
