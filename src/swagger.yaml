@@ -563,22 +563,28 @@ components:
       properties:
         code:
           type: integer
+          example: 200
         message:
           type: string
+          example: "OK"
     StayInformed:
       type: object
       properties:
         blog:
           type: string
-        mastodon:
+          example: "https://blog.opencagedata.com"
+        twitter:
           type: string
+          example: "https://twitter.com/OpenCage"
     Timestamp:
       type: object
       properties:
         created_http:
           type: string
+          example: "Tue, 25 Feb 2020 23:59:57 GMT"
         created_unix:
           type: integer
+          example: 1582679997
     Result:
       type: object
       properties:
@@ -590,92 +596,112 @@ components:
           $ref: "#/components/schemas/Components"
         confidence:
           type: integer
+          example: 9
         formatted:
           type: string
+          example: "Danau Sunter, Jalan Danau Sunter Barat, Tanjung Priok, Special Capital Region of Jakarta 14350, Indonesia"
         geometry:
           $ref: "#/components/schemas/Geometry"
     Annotations:
       type: object
       properties:
         DMS:
-          $ref: "#/components/schemas/Geometry"
+          $ref: "#/components/schemas/DMS"
         MGRS:
           type: string
+          example: "48MYU0549420855"
         Maidenhead:
           type: string
+          example: "OI33ku26ud"
         Mercator:
-          type: string
+          $ref: "#/components/schemas/Mercator"
         OSM:
-          type: string
+          $ref: "#/components/schemas/OSM"
         UN_M49:
-          type: string
+          $ref: "#/components/schemas/UN_M49"
         callingcode:
           type: integer
+          example: 62
         currency:
-          type: string
+          $ref: "#/components/schemas/Currency"
         flag:
           type: string
+          example: "🇮🇩"
         geohash:
           type: string
+          example: "qqgvpd4fhx05bgxprtuf"
         qibla:
           type: number
           format: float
+          example: 295.13
         roadinfo:
-          type: string
+          $ref: "#/components/schemas/RoadInfo"
         sun:
-          type: string
+          $ref: "#/components/schemas/Sun"
         timezone:
-          type: string
+          $ref: "#/components/schemas/Timezone"
         what3words:
-          type: string
+          $ref: "#/components/schemas/What3Words"
         wikidata:
           type: string
+          example: "Q123501098"
     Bounds:
       type: object
       properties:
         northeast:
           $ref: "#/components/schemas/Geometry"
+          example:
+            lat: -6.123456
+            lng: 106.123456
         southwest:
           $ref: "#/components/schemas/Geometry"
-          type: object
-          properties:
-            lat:
-              type: number
-              format: float
-            lng:
-              type: number
-              format: float
+          example:
+            lat: -6.654321
+            lng: 106.654321
     Components:
       type: object
       properties:
         ISO_3166-1_alpha-2:
           type: string
+          example: "ID"
         ISO_3166-1_alpha-3:
           type: string
+          example: "IDN"
         _category:
           type: string
+          example: "road"
         _type:
           type: string
+          example: "primary"
         city:
           type: string
+          example: "Jakarta"
         country:
           type: string
+          example: "Indonesia"
         country_code:
           type: string
+          example: "ID"
         county:
           type: string
+          example: "Special Capital Region of Jakarta"
         postcode:
           type: string
+          example: "14350"
         state:
           type: string
+          example: "Special Capital Region of Jakarta"
         suburb:
           type: string
+          example: "Tanjung Priok"
     Geometry:
       type: object
       properties:
         lat:
           type: number
           format: float
+          example: -6.123456
         lng:
           type: number
           format: float
+          example: 106.123456
