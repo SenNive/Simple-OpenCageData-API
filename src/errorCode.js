@@ -4,7 +4,6 @@ const ERROR_CODES = {
     404: 'Not Found. Alamat tidak ditemukan.',
     406: 'Not Acceptable.',
     500: 'Internal Server Error.',
-
 };
 
 module.exports = ERROR_CODES;

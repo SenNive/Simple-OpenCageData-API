@@ -5,44 +5,55 @@ const convert = require('xml-js');
 
 const apiKey = '***REMOVED***'
 
-// import errorCode.js
-const ERROR_CODES = require('./errorCode.js').default
+const ERROR_CODES = require('./errorCode.js')
 
 const convertJsonToXml = (json) => {
   return convert.json2xml(json, { compact: true, spaces: 4 });
 };
 
+const sendErrorResponse = (req, res, status, message = "") => {
+  const errorResponse = { message: `${ERROR_CODES[status]}${message ? ' ' + message : ''}` };
+  sendResponse(req, res, status, errorResponse);
+};
+
+const sendSuccessResponse = (req, res, status, data) => {
+  sendResponse(req, res, status, data);
+};
+
+const sendResponse = (req, res, status, payload) => {
+  if (req.headers.accept === 'application/xml') {
+    const result = convertJsonToXml(payload);
+    res.status(status).type('application/xml').send(result);
+  } else {
+    res.status(status).json(payload);
+  }
+};
+
 const authenticate = (req, res, next) => {
-  const username = req.query.username
+  const username = req.query.username;
 
   if (!username) {
-    return res
-      .status(400)
-      .json({ message: ERROR_CODES[400] })
+    return sendErrorResponse(req, res, 400);
   }
 
   try {
     checkUsernameInDatabase(username, (error, userExists) => {
       if (error) {
-        console.log(error)
-        res
-          .status(500)
-          .json({ message: ERROR_CODES[500] })
+        console.log(error);
+        return sendErrorResponse(req, res, 500);
       } else {
         if (userExists) {
-          next()
+          next();
         } else {
-          res
-            .status(401)
-            .json({ message: ERROR_CODES[401] })
+          return sendErrorResponse(req, res, 401);
         }
       }
-    })
+    });
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ message: ERROR_CODES[500] })
+    console.log(error);
+    return sendErrorResponse(req, res, 500);
   }
-}
+};
 
 // Fungsi untuk memeriksa apakah username valid
 const checkUsernameInDatabase = (username, callback) => {
@@ -65,9 +76,7 @@ const worldwide = async (req, res) => {
   const query = req.query.query
 
   if (!query) {
-    return res
-      .status(400)
-      .json({ message: ERROR_CODES[400] })
+    return sendErrorResponse(req, res, 400);
   }
 
   const worldwideGeocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
@@ -75,27 +84,10 @@ const worldwide = async (req, res) => {
   )}&key=${apiKey}`
   try {
     const response = await axios.get(worldwideGeocodeUrl)
-
-    res.format({
-      'application/json': function () {
-        res.json(response.data);
-      },
-
-      'application/xml': function () {
-        // Convert JSON data to XML
-        var xml = convertJsonToXml(response.data);
-        res.type('application/xml');
-        res.send(xml);
-      },
-
-      'default': function () {
-        // log the request and respond with 406
-        res.status(406).send(ERROR_CODES[406]);
-      }
-    });
+    sendSuccessResponse(req, res, 200, response.data);
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: ERROR_CODES[500] + " " + error.message })
+    sendErrorResponse(req, res, 500, error.message);
   }
 };
 
@@ -104,44 +96,25 @@ const reverse = async (req, res) => {
   const { lat, lng } = req.query
 
   if (!lat || !lng) {
-    return res.status(400).json({
-      message: ERROR_CODES[400]
-    })
+    return sendErrorResponse(req, res, 400);
   }
 
   const reverseGeocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`
   try {
     const response = await axios.get(reverseGeocodeUrl)
-
-    res.format({
-      'application/json': function () {
-        res.json(response.data);
-      },
-
-      'application/xml': function () {
-        var xml = convertJsonToXml(response.data);
-        res.type('application/xml');
-        res.send(xml);
-      },
-
-      'default': function () {
-        res.status(406).send(ERROR_CODES[406]);
-      }
-    });
+    sendSuccessResponse(req, res, 200, response.data);
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: ERROR_CODES[500] + " " + error.message })
+    sendErrorResponse(req, res, 500, error.message);
   }
-}
+};
 
 // Fungsi untuk melakukan forward geocoding (text to latitude/longitude)
 const forward = async (req, res) => {
   const query = req.query.query
 
   if (!query) {
-    return res
-      .status(400)
-      .json({ message: ERROR_CODES[400] })
+    return sendErrorResponse(req, res, 400);
   }
 
   const forwardGeocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
@@ -153,35 +126,18 @@ const forward = async (req, res) => {
       const firstResult = response.data.results[0]
       const { geometry } = firstResult
 
-      res.format({
-        'application/json': function () {
-          res.json({
-            latitude: geometry.lat,
-            longitude: geometry.lng
-          });
-        },
-
-        'application/xml': function () {
-          var xml = convertJsonToXml({
-            latitude: geometry.lat,
-            longitude: geometry.lng
-          });
-          res.type('application/xml');
-          res.send(xml);
-        },
-
-        'default': function () {
-          res.status(406).send(ERROR_CODES[406]);
-        }
+      sendSuccessResponse(req, res, 200, {
+        latitude: geometry.lat,
+        longitude: geometry.lng
       });
     } else {
-      res.status(404).json({ message: ERROR_CODES[404] })
+      sendErrorResponse(req, res, 404);
     }
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: ERROR_CODES[500] + " " + error.message })
+    sendErrorResponse(req, res, 500, error.message);
   }
-}
+};
 
 const forwardShort = async query => {
   const forwardGeocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
@@ -201,9 +157,7 @@ const calculateDistance = async (req, res) => {
   const to = req.query.to
 
   if (!from || !to) {
-    return res.status(400).json({
-      message: ERROR_CODES[400]
-    })
+    return sendErrorResponse(req, res, 400);
   }
 
   try {
@@ -224,26 +178,12 @@ const calculateDistance = async (req, res) => {
 
     const distanceInKm = distance / 1000
 
-    res.format({
-      'application/json': function () {
-        res.json({ distanceInKm: distanceInKm });
-      },
-
-      'application/xml': function () {
-        var xml = convertJsonToXml({ distanceInKm: distanceInKm });
-        res.type('application/xml');
-        res.send(xml);
-      },
-
-      'default': function () {
-        res.status(406).send(ERROR_CODES[406]);
-      }
-    });
+    sendSuccessResponse(req, res, 200, { distanceInKm: distanceInKm });
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: ERROR_CODES[500] + " " + error.message })
+    sendErrorResponse(req, res, 500, error.message);
   }
-}
+};
 
 module.exports = {
   authenticate,
