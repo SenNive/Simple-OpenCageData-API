@@ -159,22 +159,32 @@ paths:
           required: true
           schema:
             type: string
+            example: Menceng
           description: Lokasi asal
         - name: to
           in: query
           required: true
           schema:
             type: string
+            example: Sunter
           description: Lokasi tujuan
         - name: username
           in: query
           required: true
           schema:
             type: string
+            example: Budi
           description: Username yang sah untuk otentikasi
       responses:
         "200":
           description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistanceResponse"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/DistanceResponse"
         "400":
           description: Bad Request. Harap isi semua kolom yang diperlukan.
         "401":
@@ -687,3 +697,10 @@ components:
         words:
           type: string
           example: "gazed.across.like"
+    DistanceResponse:
+      type: object
+      properties:
+        distanceInKm:
+          type: number
+          description: Distance in kilometers
+          example: 20.431
