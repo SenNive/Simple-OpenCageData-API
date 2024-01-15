@@ -542,17 +542,22 @@ components:
       properties:
         name:
           type: string
+          example: "see attribution guide"
         url:
           type: string
+          example: "https://opencagedata.com/credits"
     Rate:
       type: object
       properties:
         limit:
           type: integer
+          example: 2500
         remaining:
           type: integer
+          example: 2499
         reset:
           type: integer
+          example: 1705363200
     Status:
       type: object
       properties:
