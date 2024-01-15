@@ -20,21 +20,20 @@ paths:
       tags:
         - map
       summary: Mencari informasi geografis dari berbagai lokasi di seluruh dunia
-      produces:
-        - application/json
-        - application/xml
       parameters:
         - name: query
           in: query
           required: true
           schema:
             type: string
+            example: "Danau Sunter"
           description: Query untuk geocoding
         - name: username
           in: query
           required: true
           schema:
             type: string
+            example: "Budi"
           description: Username yang sah untuk otentikasi
       responses:
         "200":
@@ -224,18 +223,29 @@ paths:
         - map
       summary: Mengonversi alamat atau teks menjadi koordinat latitude/longitude.
       parameters:
-        - name: query
+        - name: lat
           in: query
           required: true
           schema:
-            type: string
-          description: Query untuk forward geocoding
+            type: number
+            format: float
+            example: -6.1477065
+          description: Latitude for reverse geocoding
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+            example: 106.8616895
+          description: Longitude for reverse geocoding
         - name: username
           in: query
           required: true
           schema:
             type: string
-          description: Username yang sah untuk otentikasi
+            example: "Budi"
+          description: Valid username for authentication
       responses:
         "200":
           description: Sukses
