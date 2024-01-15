@@ -5,6 +5,9 @@ const convert = require('xml-js');
 
 const apiKey = '***REMOVED***'
 
+// import errorCode.js
+const ERROR_CODES = require('./errorCode.js').default
+
 const convertJsonToXml = (json) => {
   return convert.json2xml(json, { compact: true, spaces: 4 });
 };
@@ -15,7 +18,7 @@ const authenticate = (req, res, next) => {
   if (!username) {
     return res
       .status(400)
-      .json({ message: 'Username harus dimasukkan dalam query.' })
+      .json({ message: ERROR_CODES[400] })
   }
 
   try {
@@ -24,20 +27,20 @@ const authenticate = (req, res, next) => {
         console.log(error)
         res
           .status(500)
-          .json({ message: 'Terjadi kesalahan dalam autentikasi.' })
+          .json({ message: ERROR_CODES[500] })
       } else {
         if (userExists) {
           next()
         } else {
           res
             .status(401)
-            .json({ message: 'Autentikasi gagal. Username tidak terdaftar.' })
+            .json({ message: ERROR_CODES[401] })
         }
       }
     })
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: 'Terjadi kesalahan dalam autentikasi.' })
+    res.status(500).json({ message: ERROR_CODES[500] })
   }
 }
 
@@ -64,7 +67,7 @@ const worldwide = async (req, res) => {
   if (!query) {
     return res
       .status(400)
-      .json({ message: 'Harap masukkan query untuk worldwide geocoding.' })
+      .json({ message: ERROR_CODES[400] })
   }
 
   const worldwideGeocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
@@ -87,16 +90,14 @@ const worldwide = async (req, res) => {
 
       'default': function () {
         // log the request and respond with 406
-        res.status(406).send('Not Acceptable');
+        res.status(406).send(ERROR_CODES[406]);
       }
     });
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: ERROR_CODES[500] + " " + error.message })
   }
 };
-
-
 
 // Fungsi untuk melakukan reverse geocoding (latitude/longitude to text)
 const reverse = async (req, res) => {
@@ -104,7 +105,7 @@ const reverse = async (req, res) => {
 
   if (!lat || !lng) {
     return res.status(400).json({
-      message: 'Harap masukkan kedua nilai latitude (lat) dan longitude (lng).'
+      message: ERROR_CODES[400]
     })
   }
 
@@ -124,12 +125,12 @@ const reverse = async (req, res) => {
       },
 
       'default': function () {
-        res.status(406).send('Not Acceptable');
+        res.status(406).send(ERROR_CODES[406]);
       }
     });
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: ERROR_CODES[500] + " " + error.message })
   }
 }
 
@@ -140,7 +141,7 @@ const forward = async (req, res) => {
   if (!query) {
     return res
       .status(400)
-      .json({ message: 'Harap masukkan query untuk forward geocoding.' })
+      .json({ message: ERROR_CODES[400] })
   }
 
   const forwardGeocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
@@ -170,15 +171,15 @@ const forward = async (req, res) => {
         },
 
         'default': function () {
-          res.status(406).send('Not Acceptable');
+          res.status(406).send(ERROR_CODES[406]);
         }
       });
     } else {
-      res.status(404).json({ message: 'Alamat tidak ditemukan.' })
+      res.status(404).json({ message: ERROR_CODES[404] })
     }
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: ERROR_CODES[500] + " " + error.message })
   }
 }
 
@@ -201,7 +202,7 @@ const calculateDistance = async (req, res) => {
 
   if (!from || !to) {
     return res.status(400).json({
-      message: 'Harap masukkan lokasi asal (from) dan lokasi tujuan (to).'
+      message: ERROR_CODES[400]
     })
   }
 
@@ -235,12 +236,12 @@ const calculateDistance = async (req, res) => {
       },
 
       'default': function () {
-        res.status(406).send('Not Acceptable');
+        res.status(406).send(ERROR_CODES[406]);
       }
     });
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: ERROR_CODES[500] + " " + error.message })
   }
 }
 
