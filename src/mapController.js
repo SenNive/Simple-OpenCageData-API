@@ -1,8 +1,13 @@
+const db = require('./db')
 const axios = require('axios')
 const geolib = require('geolib')
-const db = require('./db')
+const convert = require('xml-js');
 
 const apiKey = '***REMOVED***'
+
+const convertJsonToXml = (json) => {
+  return convert.json2xml(json, { compact: true, spaces: 4 });
+};
 
 const authenticate = (req, res, next) => {
   const username = req.query.username
@@ -91,6 +96,7 @@ const worldwide = async (req, res) => {
   }
 };
 
+
 // Fungsi untuk melakukan reverse geocoding (latitude/longitude to text)
 const reverse = async (req, res) => {
   const { lat, lng } = req.query
@@ -105,7 +111,21 @@ const reverse = async (req, res) => {
   try {
     const response = await axios.get(reverseGeocodeUrl)
 
-    res.status(200).json(response.data)
+    res.format({
+      'application/json': function () {
+        res.json(response.data);
+      },
+
+      'application/xml': function () {
+        var xml = convertJsonToXml(response.data);
+        res.type('application/xml');
+        res.send(xml);
+      },
+
+      'default': function () {
+        res.status(406).send('Not Acceptable');
+      }
+    });
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: error.message })
@@ -131,10 +151,27 @@ const forward = async (req, res) => {
       const firstResult = response.data.results[0]
       const { geometry } = firstResult
 
-      res.status(200).json({
-        latitude: geometry.lat,
-        longitude: geometry.lng
-      })
+      res.format({
+        'application/json': function () {
+          res.json({
+            latitude: geometry.lat,
+            longitude: geometry.lng
+          });
+        },
+
+        'application/xml': function () {
+          var xml = convertJsonToXml({
+            latitude: geometry.lat,
+            longitude: geometry.lng
+          });
+          res.type('application/xml');
+          res.send(xml);
+        },
+
+        'default': function () {
+          res.status(406).send('Not Acceptable');
+        }
+      });
     } else {
       res.status(404).json({ message: 'Alamat tidak ditemukan.' })
     }
@@ -144,17 +181,41 @@ const forward = async (req, res) => {
   }
 }
 
-const forwardShort = async query => {
+const forwardShort = async (req, res) => {
+  const query = req.query.query
+
+  if (!query) {
+    return res
+      .status(400)
+      .json({ message: 'Harap masukkan query untuk forward geocoding.' })
+  }
+
   const forwardGeocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
     query
   )}&key=${apiKey}`
   try {
     const response = await axios.get(forwardGeocodeUrl)
-    return response.data
+
+    res.format({
+      'application/json': function () {
+        res.json(response.data);
+      },
+
+      'application/xml': function () {
+        var xml = convertJsonToXml(response.data);
+        res.type('application/xml');
+        res.send(xml);
+      },
+
+      'default': function () {
+        res.status(406).send('Not Acceptable');
+      }
+    });
   } catch (error) {
-    throw new Error('Terjadi kesalahan dalam forward geocoding.')
+    console.log(error)
+    res.status(500).json({ message: error.message })
   }
-}
+};
 
 // Fungsi untuk menghitung jarak antara dua lokasi
 const calculateDistance = async (req, res) => {
@@ -184,7 +245,22 @@ const calculateDistance = async (req, res) => {
     )
 
     const distanceInKm = distance / 1000
-    res.status(200).json({ distanceInKm: distanceInKm })
+
+    res.format({
+      'application/json': function () {
+        res.json({ distanceInKm: distanceInKm });
+      },
+
+      'application/xml': function () {
+        var xml = convertJsonToXml({ distanceInKm: distanceInKm });
+        res.type('application/xml');
+        res.send(xml);
+      },
+
+      'default': function () {
+        res.status(406).send('Not Acceptable');
+      }
+    });
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: error.message })
