@@ -514,7 +514,7 @@ components:
       properties:
         documentation:
           type: string
-          example: "https://geocode.xyz/api"
+          example: "https://opencagedata.com/api"
         licenses:
           type: array
           items:
@@ -531,10 +531,12 @@ components:
           $ref: "#/components/schemas/StayInformed"
         thanks:
           type: string
+          example: "For using an OpenCage API"
         timestamp:
           $ref: "#/components/schemas/Timestamp"
         total_results:
           type: integer
+          example: 2
     License:
       type: object
       properties:
