@@ -5,14 +5,14 @@ const convert = require('xml-js');
 
 const apiKey = '***REMOVED***'
 
-const ERROR_CODES = require('./errorCode.js')
+const HTTP_STATUS_CODES = require('./HTTP_STATUS_CODES.js')
 
 const convertJsonToXml = (json) => {
   return convert.json2xml(json, { compact: true, spaces: 4 });
 };
 
 const sendErrorResponse = (req, res, status, message = "") => {
-  const errorResponse = { message: `${ERROR_CODES[status]}${message ? ' ' + message : ''}` };
+  const errorResponse = { message: `${HTTP_STATUS_CODES[status]}${message ? ' ' + message : ''}` };
   sendResponse(req, res, status, errorResponse);
 };
 
