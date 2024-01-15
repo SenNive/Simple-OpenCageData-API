@@ -26,6 +26,8 @@ The `sql/mapserviceusers.sql` file contains the SQL commands to create the neces
 
 Here are the main API endpoints provided by the application:
 
+
+User Access
 - `GET /map/worldwide?query={query}`: This endpoint performs worldwide geocoding. It takes a `query` parameter, which is a string representing the location to geocode. It returns the geocoded information for the location.
 
 - `GET /map/reverse?lat={latitude}&lng={longitude}`: This endpoint performs reverse geocoding. It takes `lat` and `lng` parameters, which represent the latitude and longitude of a location. It returns the geocoded information for the location.
@@ -33,6 +35,16 @@ Here are the main API endpoints provided by the application:
 - `GET /map/forward?query={query}`: This endpoint performs forward geocoding. It takes a `query` parameter, which is a string representing the location to geocode. It returns the latitude and longitude of the location.
 
 - `GET /map/calculateDistance?from={fromLocation}&to={toLocation}`: This endpoint calculates the distance between two locations. It takes `from` and `to` parameters, which are strings representing the locations to calculate the distance between. It returns the distance in kilometers.
+
+Admin Access
+- `GET /admin/users`: This endpoint retrieves a list of all users. It requires admin authentication.
+
+- `POST /admin/users`: This endpoint adds a new user. It requires admin authentication and a body with `username` and `email`.
+
+- `PUT /admin/users?userId={userId}`: This endpoint updates a user's information. It requires admin authentication, a `userId` query parameter, and a body with `username` and `email`.
+
+- `DELETE /admin/users?userId={userId}`: This endpoint deletes a user. It requires admin authentication and a `userId` query parameter.
+
 
 All endpoints require authentication. The username for authentication is passed as a query parameter `username`. (It's just a basic authentication method, maybe i'll implement more secure authentication method)
 
