@@ -42,10 +42,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Map"
+                $ref: "#/components/schemas/MapWorldwide"
             application/xml:
               schema:
-                $ref: "#/components/schemas/Map"
+                $ref: "#/components/schemas/MapWorldwide"
         "401":
           description: Autentikasi gagal. Username tidak terdaftar.
           content:
@@ -509,7 +509,7 @@ components:
         - id
         - username
         - email
-    Map:
+    MapWorldwide:
       type: object
       properties:
         documentation:
@@ -650,14 +650,8 @@ components:
       properties:
         northeast:
           $ref: "#/components/schemas/Geometry"
-          example:
-            lat: -6.123456
-            lng: 106.123456
         southwest:
           $ref: "#/components/schemas/Geometry"
-          example:
-            lat: -6.654321
-            lng: 106.654321
     Components:
       type: object
       properties:
@@ -705,3 +699,160 @@ components:
           type: number
           format: float
           example: 106.123456
+    DMS:
+      type: object
+      properties:
+        lat:
+          type: string
+          example: "6° 8' 27.51324'' S"
+        lng:
+          type: string
+          example: "106° 51' 25.18956'' E"
+    Mercator:
+      type: object
+      properties:
+        x:
+          type: number
+          format: double
+          example: 11895266.5
+        y:
+          type: number
+          format: double
+          example: -680355.216
+    OSM:
+      type: object
+      properties:
+        edit_url:
+          type: string
+          example: "https://www.openstreetmap.org/edit?way=1225489012#map=16/-6.14098/106.85700"
+        note_url:
+          type: string
+          example: "https://www.openstreetmap.org/note/new#map=16/-6.14098/106.85700&layers=N"
+        url:
+          type: string
+          example: "https://www.openstreetmap.org/?mlat=-6.14098&mlon=106.85700#map=16/-6.14098/106.85700"
+    UN_M49:
+      type: object
+      properties:
+        regions:
+          type: object
+          properties:
+            ASIA:
+              type: string
+              example: "142"
+            ID:
+              type: string
+              example: "360"
+            SOUTHEAST_ASIA:
+              type: string
+              example: "035"
+            WORLD:
+              type: string
+              example: "001"
+        statistical_groupings:
+          type: array
+          items:
+            type: string
+          example: ["LEDC"]
+    Currency:
+      type: object
+      properties:
+        alternate_symbols:
+          type: array
+          items:
+            type: string
+          example: []
+        decimal_mark:
+          type: string
+          example: ","
+        html_entity:
+          type: string
+          example: ""
+        iso_code:
+          type: string
+          example: "IDR"
+        iso_numeric:
+          type: string
+          example: "360"
+        name:
+          type: string
+          example: "Indonesian Rupiah"
+        smallest_denomination:
+          type: integer
+          example: 5000
+        subunit:
+          type: string
+          example: "Sen"
+        subunit_to_unit:
+          type: integer
+          example: 100
+        symbol:
+          type: string
+          example: "Rp"
+        symbol_first:
+          type: integer
+          example: 1
+        thousands_separator:
+          type: string
+          example: "."
+    RoadInfo:
+      type: object
+      properties:
+        drive_on:
+          type: string
+          example: "left"
+        road:
+          type: string
+          example: "Jalan Danau Sunter Barat"
+        road_type:
+          type: string
+          example: "primary"
+        speed_in:
+          type: string
+          example: "km/h"
+    Sun:
+      type: object
+      properties:
+        rise:
+          $ref: "#/components/schemas/SunTimes"
+        set:
+          $ref: "#/components/schemas/SunTimes"
+    SunTimes:
+      type: object
+      properties:
+        apparent:
+          type: integer
+          example: 1582679997
+        astronomical:
+          type: integer
+          example: 1582679997
+        civil:
+          type: integer
+          example: 1582679997
+        nautical:
+          type: integer
+          example: 1582679997
+    Timezone:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Asia/Jakarta"
+        now_in_dst:
+          type: integer
+          example: 0
+        offset_sec:
+          type: integer
+          example: 25200
+        offset_string:
+          type: string
+          example: "+0700"
+        short_name:
+          type: string
+          example: "WIB"
+    What3Words:
+      type: object
+      properties:
+        words:
+          type: string
+          example: "gazed.across.like"
