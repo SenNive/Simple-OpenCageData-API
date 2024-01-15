@@ -5,10 +5,10 @@ const fs = require('fs')
 
 const rateLimit = require('express-rate-limit')
 
-const adminHandler = require('./adminHandler') // Mengimpor handler untuk admin endpoint
-const mapHandler = require('./mapHandler') // Mengimpor handler untuk map service
+const adminHandler = require('./handlers/adminHandler') // Mengimpor handler untuk admin endpoint
+const mapHandler = require('./handlers/mapHandler') // Mengimpor handler untuk map service
 
-const swaggerDocument = yaml.load(fs.readFileSync('./src/swagger.yaml', 'utf8'))
+const swaggerDocument = yaml.load(fs.readFileSync('./docs/swagger.yaml', 'utf8'))
 
 const app = express()
 

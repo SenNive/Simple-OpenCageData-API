@@ -1,9 +1,9 @@
 require('dotenv').config();
 
-const db = require('./db')
+const db = require('../utils/db')
 const axios = require('axios')
 const geolib = require('geolib')
-const { sendErrorResponse, sendSuccessResponse } = require('./helper/sendRequest')
+const { sendErrorResponse, sendSuccessResponse } = require('../utils/sendRequest.js')
 
 const apiKey = process.env.API_KEY;
 

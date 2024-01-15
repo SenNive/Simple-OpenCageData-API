@@ -1,4 +1,4 @@
-const mapController = require('./mapController')
+const mapController = require('../controllers/mapController')
 
 module.exports = app => {
   app.get('/map/worldwide', mapController.authenticate, mapController.worldwide)

@@ -1,8 +1,8 @@
 require('dotenv').config();
 
-const db = require('./db')
+const db = require('../utils/db')
 
-const { sendErrorResponse, sendSuccessResponse } = require('./helper/sendRequest')
+const { sendErrorResponse, sendSuccessResponse } = require('../utils/sendRequest.js')
 
 const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD;
 
