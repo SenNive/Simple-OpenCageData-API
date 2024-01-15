@@ -1,0 +1,674 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Map Service API
+  description:
+    Map Service API adalah layanan yang menyediakan berbagai fitur seperti
+    geocoding global, reverse geocoding, forward geocoding, dan perhitungan jarak
+    antara dua lokasi. API ini memungkinkan pengguna untuk melakukan berbagai operasi
+    terkait lokasi dan geospasial.
+servers:
+  - url: http://localhost:3000/
+tags:
+  - name: map
+    description: Operations related to maps
+  - name: admin
+    description: Operations related to admin
+paths:
+  "/map/worldwide":
+    get:
+      tags:
+        - map
+      summary: Mencari informasi geografis dari berbagai lokasi di seluruh dunia
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Query untuk geocoding
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Username yang sah untuk otentikasi
+      responses:
+        "200":
+          description: Sukses
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Map"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Map"
+        "401":
+          description: Autentikasi gagal. Username tidak terdaftar.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Autentikasi gagal. Username tidak terdaftar
+        "500":
+          description: Terjadi kesalahan dalam pemrosesan geocoding
+  "/map/reverse":
+    get:
+      tags:
+        - map
+      summary:
+        Mengonversi pasangan latitude/longitude menjadi alamat atau teks deskripsi
+        lokasi.
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+          description: Latitude
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+          description: Longitude
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Username yang sah untuk otentikasi
+      responses:
+        "200":
+          description: Sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documentation:
+                    type: string
+                    description: Dokumentasi OpenCage API
+                  licenses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Nama lisensi
+                        url:
+                          type: string
+                          description: URL lisensi
+                    description: Informasi lisensi
+                  rate:
+                    type: object
+                    properties:
+                      limit:
+                        type: integer
+                        description: Batas permintaan per periode
+                      remaining:
+                        type: integer
+                        description: Sisa permintaan dalam periode saat ini
+                      reset:
+                        type: integer
+                        description: Waktu reset periode permintaan
+                    description: Informasi batasan permintaan
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        annotations:
+                          type: object
+                          description: Anotasi geografis
+                        bounds:
+                          type: object
+                          properties:
+                            northeast:
+                              type: object
+                              properties:
+                                lat:
+                                  type: number
+                                  description: Latitude titik tenggara
+                                lng:
+                                  type: number
+                                  description: Longitude titik tenggara
+                            southwest:
+                              type: object
+                              properties:
+                                lat:
+                                  type: number
+                                  description: Latitude titik barat laut
+                                lng:
+                                  type: number
+                                  description: Longitude titik barat laut
+                          description: Batas hasil geocoding
+                        components:
+                          type: object
+                          description: Komponen alamat
+                        confidence:
+                          type: integer
+                          description: Tingkat keyakinan geocoding
+                        formatted:
+                          type: string
+                          description: Alamat lengkap hasil geocoding
+                        geometry:
+                          type: object
+                          properties:
+                            lat:
+                              type: number
+                              description: Latitude
+                            lng:
+                              type: number
+                              description: Longitude
+                          description: Informasi geometri hasil geocoding
+                    description: Hasil geocoding
+                  status:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        description: Kode status HTTP
+                      message:
+                        type: string
+                        description: Pesan status
+                    description: Informasi status permintaan
+                  stay_informed:
+                    type: object
+                    properties:
+                      blog:
+                        type: string
+                        description: URL blog OpenCage
+                      mastodon:
+                        type: string
+                        description: URL Mastodon OpenCage
+                    description: Tetap informasi dengan OpenCage
+                  thanks:
+                    type: string
+                    description: Terima kasih untuk menggunakan OpenCage API
+                  timestamp:
+                    type: object
+                    properties:
+                      created_http:
+                        type: string
+                        description: Waktu pembuatan respons dalam format HTTP
+                      created_unix:
+                        type: integer
+                        description: Waktu pembuatan respons dalam format Unix
+                    description: Informasi timestamp respons
+                  total_results:
+                    type: integer
+                    description: Total hasil geocoding
+        "401":
+          description: Autentikasi gagal. Username tidak terdaftar.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Autentikasi gagal. Username tidak terdaftar
+        "500":
+          description: Terjadi kesalahan dalam pemrosesan geocoding
+  "/map/forward":
+    get:
+      tags:
+        - map
+      summary: Mengonversi alamat atau teks menjadi koordinat latitude/longitude.
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Query untuk forward geocoding
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Username yang sah untuk otentikasi
+      responses:
+        "200":
+          description: Sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  latitude:
+                    type: number
+                    description: Latitude
+                  longitude:
+                    type: number
+                    description: Longitude
+        "401":
+          description: Autentikasi gagal. Username tidak terdaftar.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Autentikasi gagal. Username tidak terdaftar
+        "404":
+          description: Alamat tidak ditemukan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Alamat tidak ditemukan
+        "500":
+          description: Terjadi kesalahan dalam pemrosesan geocoding
+  "/map/calculateDistance":
+    get:
+      tags:
+        - map
+      summary:
+        Menghitung jarak antara dua lokasi geografis yang spesifik dan mendapatkan
+        hasil dalam satuan kilometer.
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Lokasi asal
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Lokasi tujuan
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Username yang sah untuk otentikasi
+      responses:
+        "200":
+          description: Sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  distanceInKm:
+                    type: number
+                    description:
+                      Jarak antara lokasi asal dan lokasi tujuan dalam
+                      kilometer
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Informasi tentang kesalahan permintaan
+        "401":
+          description: Autentikasi gagal. Username tidak terdaftar.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Autentikasi gagal. Username tidak terdaftar
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Informasi tentang kesalahan server
+  "/admin/users":
+    get:
+      tags:
+        - admin
+      summary: Dapatkan Daftar Pengguna
+      description: Mengambil daftar pengguna dari database.
+      operationId: getUsers
+      parameters:
+        - name: adminPassword
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Kata sandi admin diperlukan untuk otentikasi.
+      responses:
+        "200":
+          description: Operasi berhasil
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: ID Pengguna
+                    username:
+                      type: string
+                      description: Nama Pengguna
+                    email:
+                      type: string
+                      description: Email
+        "400":
+          description: Permintaan tidak valid. Kata sandi admin diperlukan.
+        "401":
+          description: Tidak diotorisasi. Kata sandi admin salah.
+        "500":
+          description: Kesalahan server internal
+    post:
+      tags:
+        - admin
+      summary: Tambahkan Pengguna Baru
+      description: Menambahkan pengguna baru ke database.
+      operationId: addUser
+      requestBody:
+        description: Objek pengguna yang akan ditambahkan
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nama Pengguna
+                email:
+                  type: string
+                  description: Email Pengguna
+        required: true
+      parameters:
+        - name: adminPassword
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Kata sandi admin diperlukan untuk otentikasi.
+      responses:
+        "201":
+          description: Pengguna berhasil ditambahkan.
+        "400":
+          description: Permintaan tidak valid. Kata sandi admin diperlukan.
+        "401":
+          description: Tidak diotorisasi. Kata sandi admin salah.
+        "409":
+          description: Konflik. Nama pengguna sudah digunakan.
+        "500":
+          description: Kesalahan server internal
+    put:
+      tags:
+        - admin
+      summary: Edit Pengguna
+      description: Mengedit pengguna yang ada dalam database.
+      operationId: editUser
+      requestBody:
+        description: Objek pengguna yang akan diedit
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                  description: ID Pengguna yang akan diedit
+                username:
+                  type: string
+                  description: Nama Pengguna yang akan diperbarui
+                email:
+                  type: string
+                  description: Email Pengguna yang akan diperbarui
+              required:
+                - userId
+        required: true
+      parameters:
+        - name: adminPassword
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Kata sandi admin diperlukan untuk otentikasi.
+      responses:
+        "200":
+          description: Pengguna berhasil diperbarui.
+        "400":
+          description: Permintaan tidak valid. Kata sandi admin diperlukan.
+        "401":
+          description: Tidak diotorisasi. Kata sandi admin salah.
+        "404":
+          description: Pengguna tidak ditemukan.
+        "500":
+          description: Kesalahan server internal
+    delete:
+      tags:
+        - admin
+      summary: Hapus Pengguna
+      description: Menghapus pengguna dari database.
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID Pengguna yang akan dihapus
+        - name: adminPassword
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Kata sandi admin diperlukan untuk otentikasi.
+      responses:
+        "200":
+          description: Pengguna berhasil dihapus.
+        "400":
+          description: Permintaan tidak valid. Kata sandi admin diperlukan.
+        "401":
+          description: Tidak diotorisasi. Kata sandi admin salah.
+        "404":
+          description: Pengguna tidak ditemukan.
+        "500":
+          description: Kesalahan server internal
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID Pengguna
+        username:
+          type: string
+          description: Nama Pengguna
+        email:
+          type: string
+          description: Email
+      required:
+        - id
+        - username
+        - email
+    Map:
+      type: object
+      properties:
+        documentation:
+          type: string
+          example: "https://geocode.xyz/api"
+        licenses:
+          type: array
+          items:
+            $ref: "#/components/schemas/License"
+        rate:
+          $ref: "#/components/schemas/Rate"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Result"
+        status:
+          $ref: "#/components/schemas/Status"
+        stay_informed:
+          $ref: "#/components/schemas/StayInformed"
+        thanks:
+          type: string
+        timestamp:
+          $ref: "#/components/schemas/Timestamp"
+        total_results:
+          type: integer
+    License:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+    Rate:
+      type: object
+      properties:
+        limit:
+          type: integer
+        remaining:
+          type: integer
+        reset:
+          type: integer
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    StayInformed:
+      type: object
+      properties:
+        blog:
+          type: string
+        mastodon:
+          type: string
+    Timestamp:
+      type: object
+      properties:
+        created_http:
+          type: string
+        created_unix:
+          type: integer
+    Result:
+      type: object
+      properties:
+        annotations:
+          $ref: "#/components/schemas/Annotations"
+        bounds:
+          $ref: "#/components/schemas/Bounds"
+        components:
+          $ref: "#/components/schemas/Components"
+        confidence:
+          type: integer
+        formatted:
+          type: string
+        geometry:
+          $ref: "#/components/schemas/Geometry"
+    Annotations:
+      type: object
+      properties:
+        DMS:
+          $ref: "#/components/schemas/Geometry"
+        MGRS:
+          type: string
+        Maidenhead:
+          type: string
+        Mercator:
+          type: string
+        OSM:
+          type: string
+        UN_M49:
+          type: string
+        callingcode:
+          type: integer
+        currency:
+          type: string
+        flag:
+          type: string
+        geohash:
+          type: string
+        qibla:
+          type: number
+          format: float
+        roadinfo:
+          type: string
+        sun:
+          type: string
+        timezone:
+          type: string
+        what3words:
+          type: string
+        wikidata:
+          type: string
+    Bounds:
+      type: object
+      properties:
+        northeast:
+          $ref: "#/components/schemas/Geometry"
+        southwest:
+          $ref: "#/components/schemas/Geometry"
+          type: object
+          properties:
+            lat:
+              type: number
+              format: float
+            lng:
+              type: number
+              format: float
+    Components:
+      type: object
+      properties:
+        ISO_3166-1_alpha-2:
+          type: string
+        ISO_3166-1_alpha-3:
+          type: string
+        _category:
+          type: string
+        _type:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        country_code:
+          type: string
+        county:
+          type: string
+        postcode:
+          type: string
+        state:
+          type: string
+        suburb:
+          type: string
+    Geometry:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: float
+        lng:
+          type: number
+          format: float
