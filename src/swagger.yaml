@@ -215,10 +215,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/Users"
             application/xml:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/Users"
         "400":
           description: Bad Request. Harap isi semua kolom yang diperlukan.
         "401":
@@ -350,6 +350,10 @@ components:
         email:
           type: string
           description: Email
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
     Map:
       type: object
       properties:
