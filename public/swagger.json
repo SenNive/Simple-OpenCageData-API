@@ -1,0 +1,1039 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "1.0.0",
+    "title": "Map Service API",
+    "description": "Map Service API adalah layanan yang menyediakan berbagai fitur seperti geocoding global, reverse geocoding, forward geocoding, dan perhitungan jarak antara dua lokasi. API ini memungkinkan pengguna untuk melakukan berbagai operasi terkait lokasi dan geospasial."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "map",
+      "description": "Operations related to maps"
+    },
+    {
+      "name": "admin",
+      "description": "Operations related to admin"
+    }
+  ],
+  "paths": {
+    "/map/worldwide": {
+      "get": {
+        "tags": [
+          "map"
+        ],
+        "summary": "Mencari informasi geografis dari berbagai lokasi di seluruh dunia",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Danau Sunter"
+            },
+            "description": "Query untuk geocoding"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Budi"
+            },
+            "description": "Username yang sah untuk otentikasi"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Map"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Map"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Harap isi semua kolom yang diperlukan."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not Found. Alamat tidak ditemukan."
+          },
+          "406": {
+            "description": "Not Acceptable."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/map/reverse": {
+      "get": {
+        "tags": [
+          "map"
+        ],
+        "summary": "Mengonversi pasangan latitude/longitude menjadi alamat atau teks deskripsi lokasi.",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "example": -6.1477065
+            },
+            "description": "Latitude for reverse geocoding"
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "example": 106.8616895
+            },
+            "description": "Longitude for reverse geocoding"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Budi"
+            },
+            "description": "Valid username for authentication"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Map"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Map"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Harap isi semua kolom yang diperlukan."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not Found. Alamat tidak ditemukan."
+          },
+          "406": {
+            "description": "Not Acceptable."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/map/forward": {
+      "get": {
+        "tags": [
+          "map"
+        ],
+        "summary": "Mengonversi alamat atau teks menjadi koordinat latitude/longitude.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Danau Sunter"
+            },
+            "description": "Query for forward geocoding"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Budi"
+            },
+            "description": "Valid username for authentication"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Geometry"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Geometry"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Harap isi semua kolom yang diperlukan."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not Found. Alamat tidak ditemukan."
+          },
+          "406": {
+            "description": "Not Acceptable."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/map/calculateDistance": {
+      "get": {
+        "tags": [
+          "map"
+        ],
+        "summary": "Menghitung jarak antara dua lokasi geografis yang spesifik dan mendapatkan hasil dalam satuan kilometer.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Menceng"
+            },
+            "description": "Lokasi asal"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Sunter"
+            },
+            "description": "Lokasi tujuan"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Budi"
+            },
+            "description": "Username yang sah untuk otentikasi"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistanceResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistanceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Harap isi semua kolom yang diperlukan."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not Found. Alamat tidak ditemukan."
+          },
+          "406": {
+            "description": "Not Acceptable."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Dapatkan Daftar Pengguna",
+        "description": "Mengambil daftar pengguna dari database.",
+        "operationId": "getUsers",
+        "parameters": [
+          {
+            "name": "adminPassword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Kata sandi admin diperlukan untuk otentikasi."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Harap isi semua kolom yang diperlukan."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Tambahkan Pengguna Baru",
+        "description": "Menambahkan pengguna baru ke database.",
+        "operationId": "addUser",
+        "requestBody": {
+          "description": "Objek pengguna yang akan ditambahkan",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "Nama Pengguna"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email Pengguna"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "adminPassword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Kata sandi admin diperlukan untuk otentikasi."
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created. Pengguna berhasil ditambahkan."
+          },
+          "400": {
+            "description": "Bad Request. Harap isi semua kolom yang diperlukan."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "409": {
+            "description": "Conflict. Pengguna sudah ada dalam database."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Edit Pengguna",
+        "description": "Mengedit pengguna yang ada dalam database.",
+        "operationId": "editUser",
+        "requestBody": {
+          "description": "Objek pengguna yang akan diedit",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "integer",
+                    "description": "ID Pengguna yang akan diedit"
+                  },
+                  "username": {
+                    "type": "string",
+                    "description": "Nama Pengguna yang akan diperbarui"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email Pengguna yang akan diperbarui"
+                  }
+                },
+                "required": [
+                  "userId"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "adminPassword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Kata sandi admin diperlukan untuk otentikasi."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not Found."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Hapus Pengguna",
+        "description": "Menghapus pengguna dari database.",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID Pengguna yang akan dihapus"
+          },
+          {
+            "name": "adminPassword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Kata sandi admin diperlukan untuk otentikasi."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not Found."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID Pengguna"
+          },
+          "username": {
+            "type": "string",
+            "description": "Nama Pengguna"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email"
+          }
+        }
+      },
+      "Users": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/User"
+        }
+      },
+      "Map": {
+        "type": "object",
+        "properties": {
+          "documentation": {
+            "type": "string",
+            "example": "https://opencagedata.com/api"
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/License"
+            }
+          },
+          "rate": {
+            "$ref": "#/components/schemas/Rate"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Result"
+            }
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "stay_informed": {
+            "$ref": "#/components/schemas/StayInformed"
+          },
+          "thanks": {
+            "type": "string",
+            "example": "For using an OpenCage API"
+          },
+          "timestamp": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "total_results": {
+            "type": "integer",
+            "example": 2
+          }
+        }
+      },
+      "License": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "see attribution guide"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://opencagedata.com/credits"
+          }
+        }
+      },
+      "Rate": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "example": 2500
+          },
+          "remaining": {
+            "type": "integer",
+            "example": 2499
+          },
+          "reset": {
+            "type": "integer",
+            "example": 1705363200
+          }
+        }
+      },
+      "Status": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "OK"
+          }
+        }
+      },
+      "StayInformed": {
+        "type": "object",
+        "properties": {
+          "blog": {
+            "type": "string",
+            "example": "https://blog.opencagedata.com"
+          },
+          "twitter": {
+            "type": "string",
+            "example": "https://twitter.com/OpenCage"
+          }
+        }
+      },
+      "Timestamp": {
+        "type": "object",
+        "properties": {
+          "created_http": {
+            "type": "string",
+            "example": "Tue, 25 Feb 2020 23:59:57 GMT"
+          },
+          "created_unix": {
+            "type": "integer",
+            "example": 1582679997
+          }
+        }
+      },
+      "Result": {
+        "type": "object",
+        "properties": {
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "bounds": {
+            "$ref": "#/components/schemas/Bounds"
+          },
+          "components": {
+            "$ref": "#/components/schemas/Components"
+          },
+          "confidence": {
+            "type": "integer",
+            "example": 9
+          },
+          "formatted": {
+            "type": "string",
+            "example": "Danau Sunter, Jalan Danau Sunter Barat, Tanjung Priok, Special Capital Region of Jakarta 14350, Indonesia"
+          },
+          "geometry": {
+            "$ref": "#/components/schemas/Geometry"
+          }
+        }
+      },
+      "Annotations": {
+        "type": "object",
+        "properties": {
+          "DMS": {
+            "$ref": "#/components/schemas/DMS"
+          },
+          "MGRS": {
+            "type": "string",
+            "example": "48MYU0549420855"
+          },
+          "Maidenhead": {
+            "type": "string",
+            "example": "OI33ku26ud"
+          },
+          "Mercator": {
+            "$ref": "#/components/schemas/Mercator"
+          },
+          "OSM": {
+            "$ref": "#/components/schemas/OSM"
+          },
+          "UN_M49": {
+            "$ref": "#/components/schemas/UN_M49"
+          },
+          "callingcode": {
+            "type": "integer",
+            "example": 62
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "flag": {
+            "type": "string",
+            "example": "🇮🇩"
+          },
+          "geohash": {
+            "type": "string",
+            "example": "qqgvpd4fhx05bgxprtuf"
+          },
+          "qibla": {
+            "type": "number",
+            "format": "float",
+            "example": 295.13
+          },
+          "roadinfo": {
+            "$ref": "#/components/schemas/RoadInfo"
+          },
+          "sun": {
+            "$ref": "#/components/schemas/Sun"
+          },
+          "timezone": {
+            "$ref": "#/components/schemas/Timezone"
+          },
+          "what3words": {
+            "$ref": "#/components/schemas/What3Words"
+          },
+          "wikidata": {
+            "type": "string",
+            "example": "Q123501098"
+          }
+        }
+      },
+      "Bounds": {
+        "type": "object",
+        "properties": {
+          "northeast": {
+            "$ref": "#/components/schemas/Geometry"
+          },
+          "southwest": {
+            "$ref": "#/components/schemas/Geometry"
+          }
+        }
+      },
+      "Components": {
+        "type": "object",
+        "properties": {
+          "ISO_3166-1_alpha-2": {
+            "type": "string",
+            "example": "ID"
+          },
+          "ISO_3166-1_alpha-3": {
+            "type": "string",
+            "example": "IDN"
+          },
+          "_category": {
+            "type": "string",
+            "example": "road"
+          },
+          "_type": {
+            "type": "string",
+            "example": "primary"
+          },
+          "city": {
+            "type": "string",
+            "example": "Jakarta"
+          },
+          "country": {
+            "type": "string",
+            "example": "Indonesia"
+          },
+          "country_code": {
+            "type": "string",
+            "example": "ID"
+          },
+          "county": {
+            "type": "string",
+            "example": "Special Capital Region of Jakarta"
+          },
+          "postcode": {
+            "type": "string",
+            "example": "14350"
+          },
+          "state": {
+            "type": "string",
+            "example": "Special Capital Region of Jakarta"
+          },
+          "suburb": {
+            "type": "string",
+            "example": "Tanjung Priok"
+          }
+        }
+      },
+      "Geometry": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "format": "float",
+            "example": -6.123456
+          },
+          "lng": {
+            "type": "number",
+            "format": "float",
+            "example": 106.123456
+          }
+        }
+      },
+      "DMS": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "string",
+            "example": "6° 8' 27.51324'' S"
+          },
+          "lng": {
+            "type": "string",
+            "example": "106° 51' 25.18956'' E"
+          }
+        }
+      },
+      "Mercator": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "double",
+            "example": 11895266.5
+          },
+          "y": {
+            "type": "number",
+            "format": "double",
+            "example": -680355.216
+          }
+        }
+      },
+      "OSM": {
+        "type": "object",
+        "properties": {
+          "edit_url": {
+            "type": "string",
+            "example": "https://www.openstreetmap.org/edit?way=1225489012#map=16/-6.14098/106.85700"
+          },
+          "note_url": {
+            "type": "string",
+            "example": "https://www.openstreetmap.org/note/new#map=16/-6.14098/106.85700&layers=N"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://www.openstreetmap.org/?mlat=-6.14098&mlon=106.85700#map=16/-6.14098/106.85700"
+          }
+        }
+      },
+      "UN_M49": {
+        "type": "object",
+        "properties": {
+          "regions": {
+            "type": "object",
+            "properties": {
+              "ASIA": {
+                "type": "string",
+                "example": "142"
+              },
+              "ID": {
+                "type": "string",
+                "example": "360"
+              },
+              "SOUTHEAST_ASIA": {
+                "type": "string",
+                "example": "035"
+              },
+              "WORLD": {
+                "type": "string",
+                "example": "001"
+              }
+            }
+          },
+          "statistical_groupings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "LEDC"
+            ]
+          }
+        }
+      },
+      "Currency": {
+        "type": "object",
+        "properties": {
+          "alternate_symbols": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": []
+          },
+          "decimal_mark": {
+            "type": "string",
+            "example": ","
+          },
+          "html_entity": {
+            "type": "string",
+            "example": ""
+          },
+          "iso_code": {
+            "type": "string",
+            "example": "IDR"
+          },
+          "iso_numeric": {
+            "type": "string",
+            "example": "360"
+          },
+          "name": {
+            "type": "string",
+            "example": "Indonesian Rupiah"
+          },
+          "smallest_denomination": {
+            "type": "integer",
+            "example": 5000
+          },
+          "subunit": {
+            "type": "string",
+            "example": "Sen"
+          },
+          "subunit_to_unit": {
+            "type": "integer",
+            "example": 100
+          },
+          "symbol": {
+            "type": "string",
+            "example": "Rp"
+          },
+          "symbol_first": {
+            "type": "integer",
+            "example": 1
+          },
+          "thousands_separator": {
+            "type": "string",
+            "example": "."
+          }
+        }
+      },
+      "RoadInfo": {
+        "type": "object",
+        "properties": {
+          "drive_on": {
+            "type": "string",
+            "example": "left"
+          },
+          "road": {
+            "type": "string",
+            "example": "Jalan Danau Sunter Barat"
+          },
+          "road_type": {
+            "type": "string",
+            "example": "primary"
+          },
+          "speed_in": {
+            "type": "string",
+            "example": "km/h"
+          }
+        }
+      },
+      "Sun": {
+        "type": "object",
+        "properties": {
+          "rise": {
+            "$ref": "#/components/schemas/SunTimes"
+          },
+          "set": {
+            "$ref": "#/components/schemas/SunTimes"
+          }
+        }
+      },
+      "SunTimes": {
+        "type": "object",
+        "properties": {
+          "apparent": {
+            "type": "integer",
+            "example": 1582679997
+          },
+          "astronomical": {
+            "type": "integer",
+            "example": 1582679997
+          },
+          "civil": {
+            "type": "integer",
+            "example": 1582679997
+          },
+          "nautical": {
+            "type": "integer",
+            "example": 1582679997
+          }
+        }
+      },
+      "Timezone": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Asia/Jakarta"
+          },
+          "now_in_dst": {
+            "type": "integer",
+            "example": 0
+          },
+          "offset_sec": {
+            "type": "integer",
+            "example": 25200
+          },
+          "offset_string": {
+            "type": "string",
+            "example": "+0700"
+          },
+          "short_name": {
+            "type": "string",
+            "example": "WIB"
+          }
+        }
+      },
+      "What3Words": {
+        "type": "object",
+        "properties": {
+          "words": {
+            "type": "string",
+            "example": "gazed.across.like"
+          }
+        }
+      },
+      "DistanceResponse": {
+        "type": "object",
+        "properties": {
+          "distanceInKm": {
+            "type": "number",
+            "description": "Distance in kilometers",
+            "example": 20.431
+          }
+        }
+      }
+    }
+  }
+}
