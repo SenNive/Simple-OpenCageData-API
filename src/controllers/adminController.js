@@ -1,8 +1,7 @@
 require('dotenv').config();
 
-const db = require('../utils/db')
-
-const { sendErrorResponse, sendSuccessResponse } = require('../utils/sendRequest.js')
+const { sql } = require('@vercel/postgres');
+const { sendErrorResponse, sendSuccessResponse } = require('../utils/sendRequest.js');
 
 const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD;
 
@@ -27,111 +26,77 @@ const authenticate = (req, res, next) => {
 };
 
 // Get list of users
-const getUsers = (req, res) => {
-  db.query('SELECT * FROM mapserviceusers', (error, results, fields) => {
-    if (error) {
-      console.log(error);
-      return sendErrorResponse(req, res, 500);
-    } else {
-      return sendSuccessResponse(req, res, 200, results);
-    }
-  });
+const getUsers = async (req, res) => {
+  try {
+    const results = await sql`SELECT * FROM mapserviceusers`;
+    return sendSuccessResponse(req, res, 200, results);
+  } catch (error) {
+    console.log(error);
+    return sendErrorResponse(req, res, 500);
+  }
 };
 
 // Add a user
-const addUser = (req, res) => {
-  const { username, email } = req.body
+const addUser = async (req, res) => {
+  const { username, email } = req.body;
 
   if (!username || !email) {
     return sendErrorResponse(req, res, 400);
   } else {
-    // Check if username already exists in the database
-    db.query(
-      'SELECT username FROM mapserviceusers WHERE username = ?',
-      [username],
-      (error, results, fields) => {
-        if (error) {
-          console.log(error);
-          return sendErrorResponse(req, res, 500);
-        } else if (results.length > 0) {
-          return sendErrorResponse(req, res, 409, 'Username is already taken.');
-        } else {
-          // Add the user if the username is unique
-          db.query(
-            'INSERT INTO mapserviceusers (username, email) VALUES (?, ?)',
-            [username, email],
-            (error, results, fields) => {
-              if (error) {
-                console.log(error);
-                return sendErrorResponse(req, res, 500);
-              } else {
-                return sendSuccessResponse(req, res, 201, { message: 'User added successfully.' });
-              }
-            }
-          )
-        }
+    try {
+      const userExists = await sql`SELECT username FROM mapserviceusers WHERE username = ${username}`;
+      if (userExists.length > 0) {
+        return sendErrorResponse(req, res, 409, 'Username is already taken.');
+      } else {
+        await sql`INSERT INTO mapserviceusers (username, email) VALUES (${username}, ${email})`;
+        return sendSuccessResponse(req, res, 201, { message: 'User added successfully.' });
       }
-    )
+    } catch (error) {
+      console.log(error);
+      return sendErrorResponse(req, res, 500);
+    }
   }
 };
 
 // Edit a user
-const editUser = (req, res) => {
-  const userId = req.query.userId
-  const { username, email } = req.body
+const editUser = async (req, res) => {
+  const userId = req.query.userId;
+  const { username, email } = req.body;
 
   if (!username || !email) {
     return sendErrorResponse(req, res, 400);
   } else {
-    // Check if the user with the given ID exists in the database
-    db.query(
-      'SELECT * FROM mapserviceusers WHERE id = ?',
-      [userId],
-      (selectError, selectResults, selectFields) => {
-        if (selectError) {
-          return sendErrorResponse(req, res, 500);
-        } else if (selectResults.length === 0) {
-          return sendErrorResponse(req, res, 404, 'User not found.');
-        } else {
-          // User found, perform the update
-          db.query(
-            'UPDATE mapserviceusers SET username = ?, email = ? WHERE id = ?',
-            [username, email, userId],
-            (updateError, updateResults, updateFields) => {
-              if (updateError) {
-                return sendErrorResponse(req, res, 500);
-              } else {
-                return sendSuccessResponse(req, res, 200, { message: 'User updated successfully.' });
-              }
-            }
-          )
-        }
+    try {
+      const userExists = await sql`SELECT * FROM mapserviceusers WHERE id = ${userId}`;
+      if (userExists.length === 0) {
+        return sendErrorResponse(req, res, 404, 'User not found.');
+      } else {
+        await sql`UPDATE mapserviceusers SET username = ${username}, email = ${email} WHERE id = ${userId}`;
+        return sendSuccessResponse(req, res, 200, { message: 'User updated successfully.' });
       }
-    )
+    } catch (error) {
+      console.log(error);
+      return sendErrorResponse(req, res, 500);
+    }
   }
-}
+};
 
 // Delete a user
-const deleteUser = (req, res) => {
-  const userId = req.query.userId
+const deleteUser = async (req, res) => {
+  const userId = req.query.userId;
 
-  db.query(
-    'DELETE FROM mapserviceusers WHERE id = ?',
-    [userId],
-    (error, results, fields) => {
-      if (error) {
-        console.log(error)
-        return sendErrorResponse(req, res, 500);
-      } else {
-        if (results.affectedRows === 0) {
-          return sendErrorResponse(req, res, 404, 'User not found.');
-        } else {
-          return sendSuccessResponse(req, res, 200, { message: 'User deleted successfully.' });
-        }
-      }
+  try {
+    const result = await sql`DELETE FROM mapserviceusers WHERE id = ${userId}`;
+    if (result.count === 0) {
+      return sendErrorResponse(req, res, 404, 'User not found.');
+    } else {
+      return sendSuccessResponse(req, res, 200, { message: 'User deleted successfully.' });
     }
-  )
-}
+  } catch (error) {
+    console.log(error);
+    return sendErrorResponse(req, res, 500);
+  }
+};
 
 module.exports = {
   authenticate,
@@ -139,4 +104,4 @@ module.exports = {
   addUser,
   editUser,
   deleteUser
-}
+};

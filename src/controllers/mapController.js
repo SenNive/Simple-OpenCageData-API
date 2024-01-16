@@ -1,14 +1,14 @@
 require('dotenv').config();
 
-const db = require('../utils/db')
-const axios = require('axios')
-const geolib = require('geolib')
-const { sendErrorResponse, sendSuccessResponse } = require('../utils/sendRequest.js')
+const { sql } = require('@vercel/postgres');
+const axios = require('axios');
+const geolib = require('geolib');
+const { sendErrorResponse, sendSuccessResponse } = require('../utils/sendRequest.js');
 
 const apiKey = process.env.API_KEY;
 
 // Middleware to authenticate user
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const username = req.query.username;
 
   if (!username) {
@@ -16,39 +16,40 @@ const authenticate = (req, res, next) => {
   }
 
   try {
-    checkUsernameInDatabase(username, (error, userExists) => {
-      if (error) {
-        console.log(error);
-        return sendErrorResponse(req, res, 500);
-      } else {
-        if (userExists) {
-          next();
-        } else {
-          return sendErrorResponse(req, res, 401);
-        }
-      }
-    });
+    const userExists = await checkUsernameInDatabase(username);
+    if (userExists) {
+      next();
+    } else {
+      return sendErrorResponse(req, res, 401);
+    }
   } catch (error) {
     console.log(error);
     return sendErrorResponse(req, res, 500);
   }
 };
 
+
 // Function to check if the username is valid
-const checkUsernameInDatabase = (username, callback) => {
+const checkUsernameInDatabase = async (username) => {
   try {
-    const query = 'SELECT * FROM mapserviceusers WHERE username = ?'
-    db.query(query, [username], (error, rows) => {
-      if (error) {
-        callback(error, null)
-      } else {
-        callback(null, rows.length > 0)
-      }
-    })
+    const result = await sql`SELECT * FROM mapserviceusers WHERE username = ${username}`;
+    return result.rowCount > 0;
   } catch (error) {
-    callback(error, null)
+    console.error('Error executing query', error);
+    return false;
   }
 }
+
+// Function to check if the username is valid
+// const checkUsernameInDatabase = async (username) => {
+//   try {
+//     const result = await query('SELECT * FROM mapserviceusers WHERE username = $1', [username]);
+//     return result.length > 0;
+//   } catch (error) {
+//     console.error('Error executing query', error);
+//     return false;
+//   }
+// }
 
 // Function to perform worldwide geocoding
 const worldwide = async (req, res) => {
@@ -171,4 +172,4 @@ module.exports = {
   reverse,
   forward,
   calculateDistance
-}
+};
