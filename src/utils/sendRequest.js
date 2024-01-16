@@ -18,9 +18,11 @@ const sendSuccessResponse = (req, res, status, data) => {
 const sendResponse = (req, res, status, payload) => {
     if (req.headers.accept === 'application/xml') {
         const result = convertJsonToXml(payload);
-        res.status(status).type('application/xml').send(result);
+        res.writeHead(status, { 'Content-Type': 'application/xml' });
+        res.end(result);
     } else {
-        res.status(status).json(payload);
+        res.writeHead(status, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(payload));
     }
 };
 
