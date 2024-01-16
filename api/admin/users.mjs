@@ -4,7 +4,6 @@ import * as adminController from '../../src/controllers/adminController.js';
 import { deleteUser } from '../../src/controllers/adminController.js';
 
 export default (req, res) => {
-    console.log('test');
     adminController.authenticate(req, res, () => {
         switch (req.method) {
             case 'GET':

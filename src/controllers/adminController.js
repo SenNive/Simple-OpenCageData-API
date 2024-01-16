@@ -29,7 +29,7 @@ const authenticate = (req, res, next) => {
 const getUsers = async (req, res) => {
   try {
     const results = await sql`SELECT * FROM mapserviceusers`;
-    return sendSuccessResponse(req, res, 200, results);
+    return sendSuccessResponse(req, res, 200, results.rows);
   } catch (error) {
     console.log(error);
     return sendErrorResponse(req, res, 500);
@@ -45,7 +45,7 @@ const addUser = async (req, res) => {
   } else {
     try {
       const userExists = await sql`SELECT username FROM mapserviceusers WHERE username = ${username}`;
-      if (userExists.length > 0) {
+      if (userExists.rowCount > 0) {
         return sendErrorResponse(req, res, 409, 'Username is already taken.');
       } else {
         await sql`INSERT INTO mapserviceusers (username, email) VALUES (${username}, ${email})`;
@@ -60,19 +60,29 @@ const addUser = async (req, res) => {
 
 // Edit a user
 const editUser = async (req, res) => {
-  const userId = req.query.userId;
-  const { username, email } = req.body;
+  const { userId, username, email } = req.body;
 
   if (!username || !email) {
     return sendErrorResponse(req, res, 400);
   } else {
     try {
       const userExists = await sql`SELECT * FROM mapserviceusers WHERE id = ${userId}`;
-      if (userExists.length === 0) {
+      if (userExists.rowCount === 0) {
         return sendErrorResponse(req, res, 404, 'User not found.');
       } else {
-        await sql`UPDATE mapserviceusers SET username = ${username}, email = ${email} WHERE id = ${userId}`;
-        return sendSuccessResponse(req, res, 200, { message: 'User updated successfully.' });
+        const usernameExists = await sql`SELECT * FROM mapserviceusers WHERE username = ${username} AND id != ${userId}`;
+        if (usernameExists.rowCount > 0) {
+          return sendErrorResponse(req, res, 400, 'Username already exists.');
+        } else if (userExists.rows[0].username === username && userExists.rows[0].email === email) {
+          return sendErrorResponse(req, res, 400, 'No changes were made.');
+        } else {
+          const result = await sql`UPDATE mapserviceusers SET username = ${username}, email = ${email} WHERE id = ${userId}`;
+          if (result.rowCount > 0) {
+            return sendSuccessResponse(req, res, 200, { message: 'User updated successfully.' });
+          } else {
+            return sendErrorResponse(req, res, 500);
+          }
+        }
       }
     } catch (error) {
       console.log(error);
@@ -85,9 +95,13 @@ const editUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const userId = req.query.userId;
 
+  if (!userId) {
+    return sendErrorResponse(req, res, 400);
+  }
+
   try {
     const result = await sql`DELETE FROM mapserviceusers WHERE id = ${userId}`;
-    if (result.count === 0) {
+    if (result.rowCount === 0) {
       return sendErrorResponse(req, res, 404, 'User not found.');
     } else {
       return sendSuccessResponse(req, res, 200, { message: 'User deleted successfully.' });
