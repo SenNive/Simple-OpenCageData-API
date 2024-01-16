@@ -4,6 +4,7 @@ const HTTP_STATUS_CODES = {
     400: 'Bad Request.',
     401: 'Unauthorized.',
     404: 'Not Found.',
+    405: 'Method Not Allowed.',
     406: 'Not Acceptable.',
     409: 'Conflict.',
     500: 'Internal Server Error.',
