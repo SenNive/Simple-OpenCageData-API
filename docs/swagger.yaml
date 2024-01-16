@@ -8,7 +8,7 @@ info:
     antara dua lokasi. API ini memungkinkan pengguna untuk melakukan berbagai operasi
     terkait lokasi dan geospasial.
 servers:
-  - url: http://localhost:3000/
+  - url: http://localhost:3000/api
 tags:
   - name: map
     description: Operations related to maps
@@ -325,6 +325,13 @@ paths:
           schema:
             type: string
           description: Kata sandi admin diperlukan untuk otentikasi.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
       responses:
         "200":
           description: Success.
