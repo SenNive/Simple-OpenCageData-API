@@ -1,8 +1,11 @@
-const { authenticate } = require('../../src/controllers/adminController');
-const { sendErrorResponse } = require('../../src/utils/sendRequest');
+import { sendErrorResponse } from '../../src/utils/sendRequest.js';
+import * as adminController from '../../src/controllers/adminController.js';
 
-module.exports = (req, res) => {
-    authenticate(req, res, () => {
+import { deleteUser } from '../../src/controllers/adminController.js';
+
+export default (req, res) => {
+    console.log('test');
+    adminController.authenticate(req, res, () => {
         switch (req.method) {
             case 'GET':
                 adminController.getUsers(req, res);
