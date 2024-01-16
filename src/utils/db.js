@@ -1,24 +1,27 @@
-const mysql = require('mysql2');
+require('dotenv').config();
+const { Pool } = require('pg');
 
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'webtech3',
-};
-
-const pool = mysql.createPool(dbConfig);
+const pool = new Pool({
+    connectionString: process.env.POSTGRES_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
 const query = (sql, values, callback) => {
-    pool.getConnection((err, connection) => {
+    pool.connect((err, client) => {
         if (err) {
             console.log(err);
             callback(err, null);
             return;
         }
-        connection.query(sql, values, (error, results, fields) => {
-            connection.release();
-            callback(error, results);
+        client.query(sql, values, (error, results) => {
+            client.release();
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results.rows);
+            }
         });
     });
 };
