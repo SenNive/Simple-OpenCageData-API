@@ -1,7 +1,7 @@
-const { authenticate, forward } = require('../../src/controllers/mapController');
-const { sendErrorResponse } = require('../../src/utils/sendRequest');
+import { authenticate, forward } from '../../src/controllers/mapController.js';
+import { sendErrorResponse } from '../../src/utils/sendRequest.js';
 
-module.exports = (req, res) => {
+export default (req, res) => {
     authenticate(req, res, () => {
         if (req.method === 'GET') {
             forward(req, res);
