@@ -6,6 +6,7 @@ const { sendErrorResponse, sendSuccessResponse } = require('../utils/sendRequest
 
 const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD;
 
+// Middleware to authenticate admin
 const authenticate = (req, res, next) => {
   const adminPassword = req.query.adminPassword;
 
@@ -25,7 +26,7 @@ const authenticate = (req, res, next) => {
   }
 };
 
-// Mendapatkan daftar pengguna
+// Get list of users
 const getUsers = (req, res) => {
   db.query('SELECT * FROM mapserviceusers', (error, results, fields) => {
     if (error) {
@@ -37,14 +38,14 @@ const getUsers = (req, res) => {
   });
 };
 
-// Menambahkan pengguna
+// Add a user
 const addUser = (req, res) => {
   const { username, email } = req.body
 
   if (!username || !email) {
     return sendErrorResponse(req, res, 400);
   } else {
-    // Periksa apakah username sudah ada dalam database
+    // Check if username already exists in the database
     db.query(
       'SELECT username FROM mapserviceusers WHERE username = ?',
       [username],
@@ -53,9 +54,9 @@ const addUser = (req, res) => {
           console.log(error);
           return sendErrorResponse(req, res, 500);
         } else if (results.length > 0) {
-          return sendErrorResponse(req, res, 409, 'Username sudah digunakan.');
+          return sendErrorResponse(req, res, 409, 'Username is already taken.');
         } else {
-          // Tambahkan pengguna jika username unik
+          // Add the user if the username is unique
           db.query(
             'INSERT INTO mapserviceusers (username, email) VALUES (?, ?)',
             [username, email],
@@ -64,7 +65,7 @@ const addUser = (req, res) => {
                 console.log(error);
                 return sendErrorResponse(req, res, 500);
               } else {
-                return sendSuccessResponse(req, res, 201, { message: 'Pengguna berhasil ditambahkan.' });
+                return sendSuccessResponse(req, res, 201, { message: 'User added successfully.' });
               }
             }
           )
@@ -74,7 +75,7 @@ const addUser = (req, res) => {
   }
 };
 
-// Mengedit pengguna
+// Edit a user
 const editUser = (req, res) => {
   const userId = req.query.userId
   const { username, email } = req.body
@@ -82,7 +83,7 @@ const editUser = (req, res) => {
   if (!username || !email) {
     return sendErrorResponse(req, res, 400);
   } else {
-    // Periksa apakah pengguna dengan ID yang diberikan ada dalam database
+    // Check if the user with the given ID exists in the database
     db.query(
       'SELECT * FROM mapserviceusers WHERE id = ?',
       [userId],
@@ -90,9 +91,9 @@ const editUser = (req, res) => {
         if (selectError) {
           return sendErrorResponse(req, res, 500);
         } else if (selectResults.length === 0) {
-          return sendErrorResponse(req, res, 404, 'Pengguna tidak ditemukan.');
+          return sendErrorResponse(req, res, 404, 'User not found.');
         } else {
-          // Pengguna ditemukan, lakukan pembaruan
+          // User found, perform the update
           db.query(
             'UPDATE mapserviceusers SET username = ?, email = ? WHERE id = ?',
             [username, email, userId],
@@ -100,7 +101,7 @@ const editUser = (req, res) => {
               if (updateError) {
                 return sendErrorResponse(req, res, 500);
               } else {
-                return sendSuccessResponse(req, res, 200, { message: 'Pengguna berhasil diperbarui.' });
+                return sendSuccessResponse(req, res, 200, { message: 'User updated successfully.' });
               }
             }
           )
@@ -110,7 +111,7 @@ const editUser = (req, res) => {
   }
 }
 
-// Menghapus pengguna
+// Delete a user
 const deleteUser = (req, res) => {
   const userId = req.query.userId
 
@@ -123,9 +124,9 @@ const deleteUser = (req, res) => {
         return sendErrorResponse(req, res, 500);
       } else {
         if (results.affectedRows === 0) {
-          return sendErrorResponse(req, res, 404, 'Pengguna tidak ditemukan.');
+          return sendErrorResponse(req, res, 404, 'User not found.');
         } else {
-          return sendSuccessResponse(req, res, 200, { message: 'Pengguna berhasil dihapus.' });
+          return sendSuccessResponse(req, res, 200, { message: 'User deleted successfully.' });
         }
       }
     }

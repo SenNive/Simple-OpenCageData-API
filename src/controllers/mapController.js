@@ -7,6 +7,7 @@ const { sendErrorResponse, sendSuccessResponse } = require('../utils/sendRequest
 
 const apiKey = process.env.API_KEY;
 
+// Middleware to authenticate user
 const authenticate = (req, res, next) => {
   const username = req.query.username;
 
@@ -33,7 +34,7 @@ const authenticate = (req, res, next) => {
   }
 };
 
-// Fungsi untuk memeriksa apakah username valid
+// Function to check if the username is valid
 const checkUsernameInDatabase = (username, callback) => {
   try {
     const query = 'SELECT * FROM mapserviceusers WHERE username = ?'
@@ -49,7 +50,7 @@ const checkUsernameInDatabase = (username, callback) => {
   }
 }
 
-// Fungsi untuk melakukan worldwide geocoding
+// Function to perform worldwide geocoding
 const worldwide = async (req, res) => {
   const query = req.query.query
 
@@ -69,7 +70,7 @@ const worldwide = async (req, res) => {
   }
 };
 
-// Fungsi untuk melakukan reverse geocoding (latitude/longitude to text)
+// Function to perform reverse geocoding (latitude/longitude to text)
 const reverse = async (req, res) => {
   const { lat, lng } = req.query
 
@@ -87,7 +88,7 @@ const reverse = async (req, res) => {
   }
 };
 
-// Fungsi untuk melakukan forward geocoding (text to latitude/longitude)
+// Function to perform forward geocoding (text to latitude/longitude)
 const forward = async (req, res) => {
   const query = req.query.query
 
@@ -117,6 +118,7 @@ const forward = async (req, res) => {
   }
 };
 
+// Function to perform short forward geocoding
 const forwardShort = async query => {
   const forwardGeocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
     query
@@ -125,11 +127,11 @@ const forwardShort = async query => {
     const response = await axios.get(forwardGeocodeUrl)
     return response.data
   } catch (error) {
-    throw new Error('Terjadi kesalahan dalam forward geocoding.')
+    throw new Error('An error occurred in forward geocoding.')
   }
 }
 
-// Fungsi untuk menghitung jarak antara dua lokasi
+// Function to calculate the distance between two locations
 const calculateDistance = async (req, res) => {
   const from = req.query.from
   const to = req.query.to
@@ -142,7 +144,7 @@ const calculateDistance = async (req, res) => {
     const fromLocation = await forwardShort(from)
     const toLocation = await forwardShort(to)
 
-    // Menggunakan geolib untuk menghitung jarak
+    // Using geolib to calculate distance
     const distance = geolib.getDistance(
       {
         latitude: fromLocation.results[0].geometry.lat,
