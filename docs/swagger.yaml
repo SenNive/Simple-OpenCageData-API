@@ -7,15 +7,13 @@ info:
     geocoding global, reverse geocoding, forward geocoding, dan perhitungan jarak
     antara dua lokasi. API ini memungkinkan pengguna untuk melakukan berbagai operasi
     terkait lokasi dan geospasial.
-servers:
-  - url: http://localhost:3000/api
 tags:
   - name: map
     description: Operations related to maps
   - name: admin
     description: Operations related to admin
 paths:
-  "/map/worldwide":
+  "/api/map/worldwide":
     get:
       tags:
         - map
@@ -55,7 +53,7 @@ paths:
           description: Not Acceptable.
         "500":
           description: Internal Server Error.
-  "/map/reverse":
+  "/api/map/reverse":
     get:
       tags:
         - map
@@ -106,7 +104,7 @@ paths:
           description: Not Acceptable.
         "500":
           description: Internal Server Error.
-  "/map/forward":
+  "/api/map/forward":
     get:
       tags:
         - map
@@ -146,7 +144,7 @@ paths:
           description: Not Acceptable.
         "500":
           description: Internal Server Error.
-  "/map/calculateDistance":
+  "/api/map/calculateDistance":
     get:
       tags:
         - map
@@ -195,7 +193,7 @@ paths:
           description: Not Acceptable.
         "500":
           description: Internal Server Error.
-  "/admin/users":
+  "/api/admin/users":
     get:
       tags:
         - admin

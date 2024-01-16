@@ -5,11 +5,6 @@
     "title": "Map Service API",
     "description": "Map Service API adalah layanan yang menyediakan berbagai fitur seperti geocoding global, reverse geocoding, forward geocoding, dan perhitungan jarak antara dua lokasi. API ini memungkinkan pengguna untuk melakukan berbagai operasi terkait lokasi dan geospasial."
   },
-  "servers": [
-    {
-      "url": "http://localhost:3000/api"
-    }
-  ],
   "tags": [
     {
       "name": "map",
@@ -21,7 +16,7 @@
     }
   ],
   "paths": {
-    "/map/worldwide": {
+    "/api/map/worldwide": {
       "get": {
         "tags": [
           "map"
@@ -83,7 +78,7 @@
         }
       }
     },
-    "/map/reverse": {
+    "/api/map/reverse": {
       "get": {
         "tags": [
           "map"
@@ -157,7 +152,7 @@
         }
       }
     },
-    "/map/forward": {
+    "/api/map/forward": {
       "get": {
         "tags": [
           "map"
@@ -219,7 +214,7 @@
         }
       }
     },
-    "/map/calculateDistance": {
+    "/api/map/calculateDistance": {
       "get": {
         "tags": [
           "map"
@@ -291,7 +286,7 @@
         }
       }
     },
-    "/admin/users": {
+    "/api/admin/users": {
       "get": {
         "tags": [
           "admin"
